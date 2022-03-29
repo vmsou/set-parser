@@ -31,8 +31,10 @@ def main() -> None:
         "INTERSECT": ["⋂", "∩", "^", "INTERSECT", "INTERSECTION"],
         "DIFFERENCE": ["-", "DIFFERENCE"],
         "BELONG": ["∈", "e"],
+        "NOT_BELONG": ["∉"],
         "IMPROPER_SUBSET": ["⊆"],
         "PROPER_SUBSET": ["⊂"],
+        "NOT_SUBSET": ["⊄"],
         "SYMMETRIC_DIFFERENCE": ["⊖", "⊕", "^", "SYMMETRIC_DIFFERENCE"],
         "CARTESIAN": ["X"],
         "COMPLEMENT": ["'"]

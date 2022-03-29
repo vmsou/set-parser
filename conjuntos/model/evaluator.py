@@ -14,7 +14,7 @@ set_function = Callable[[list[set_element_t]], set_element_t]
 # Operators
 _UNARY_OPERATORS: set[str] = {"COMPLEMENT"}
 _SET_OPERATORS: set[str] = {"UNION", "INTERSECT", "DIFFERENCE", "SYMMETRIC_DIFFERENCE", "CARTESIAN"}.union(_UNARY_OPERATORS)
-_BOOL_OPERATORS: set[str] = {"BELONG", "PROPER_SUBSET", "IMPROPER_SUBSET"}
+_BOOL_OPERATORS: set[str] = {"BELONG", "NOT_BELONG", "PROPER_SUBSET", "IMPROPER_SUBSET", "NOT_SUBSET"}
 _OPERATORS: set[str] = {"END", "DEFINE"}.union(_SET_OPERATORS.union(_BOOL_OPERATORS))
 
 _priorities: dict[str, int] = {"END": -1, "VAR": 1, "NUMBER": 1, "COMPLEMENT": 2}
@@ -73,8 +73,10 @@ _evaluations: dict[str, Callable[[set_element_t, set_element_t], set_element_t]]
 
     # Return Boolean
     "BELONG": lambda l, r: l in r,
-    "PROPER_SUBSET": is_proper_subset2,
-    "IMPROPER_SUBSET": lambda l, r: l == r
+    "NOT_BELONG": lambda l, r: l not in r,
+    "PROPER_SUBSET": is_proper_subset,
+    "IMPROPER_SUBSET": lambda l, r: l == r,
+    "NOT_SUBSET": lambda l, r: not is_proper_subset(l, r)
 }
 
 

@@ -6,10 +6,10 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from typing import TypeVar, Generic
 
-from model.evaluator import evaluate, set_element_t, set_function, get_priority, _OPERATORS, _UNARY_OPERATORS
-from parser.exceptions import ParseError
-from parser.tokenizer import Tokenizer, Token
-from model.wrapper import Set, Number
+from conjuntos.model.evaluator import evaluate, set_element_t, set_function, get_priority, _OPERATORS, _UNARY_OPERATORS
+from conjuntos.parser.exceptions import ParseError
+from conjuntos.parser.tokenizer import Tokenizer, Token
+from conjuntos.model.wrapper import Set, Number
 
 # Type Alias
 _T = TypeVar("_T")

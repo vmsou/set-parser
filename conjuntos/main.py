@@ -1,10 +1,10 @@
 from typing import Iterable, TypeVar
 
-from model.evaluator import power_set, set_element_t
-from model.wrapper import Set
-from parser.exceptions import ParseError, EvaluateError
-from parser.parser import Parser, SetParser, ParseResult
-from parser.tokenizer import Tokenizer, SetTokenizer
+from conjuntos.model.evaluator import power_set, set_element_t
+from conjuntos.model.wrapper import Set
+from conjuntos.parser.exceptions import ParseError, EvaluateError
+from conjuntos.parser.parser import Parser, SetParser, ParseResult
+from conjuntos.parser.tokenizer import Tokenizer, SetTokenizer
 
 
 # Type Aliases

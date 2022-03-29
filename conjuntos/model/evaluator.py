@@ -3,8 +3,8 @@ from __future__ import annotations
 from itertools import combinations
 from typing import Union, Callable
 
-from parser.exceptions import EvaluateError
-from model.wrapper import Set, Number
+from conjuntos.parser.exceptions import EvaluateError
+from conjuntos.model.wrapper import Set, Number
 
 # Type Aliases
 set_element_t = Union[Number, bool, str, Set["set_element_t"], tuple["set_element_t", "set_element_t"]]

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from itertools import combinations
 from typing import Union, Callable
 
@@ -17,12 +18,12 @@ _SET_OPERATORS: set[str] = {"UNION", "INTERSECT", "DIFFERENCE", "SYMMETRIC_DIFFE
 _BOOL_OPERATORS: set[str] = {"BELONG", "NOT_BELONG", "PROPER_SUBSET", "IMPROPER_SUBSET", "NOT_SUBSET"}
 _OPERATORS: set[str] = {"END", "DEFINE"}.union(_SET_OPERATORS.union(_BOOL_OPERATORS))
 
-_priorities: dict[str, int] = {"END": -1, "VAR": 1, "NUMBER": 1, "COMPLEMENT": 2}
+_priorities: defaultdict[str, int] = defaultdict(lambda: 0)
+_priorities.update(dict(END=-1, VAR=1, NUMBER=1, COMPLEMENT=2))
 
 
 def get_priority(kind: str) -> int:
-    if kind in _priorities: return _priorities[kind]
-    return 0
+    return _priorities[kind]
 
 
 def power_set(args: list[Set[set_element_t]]) -> Set[set_element_t]:

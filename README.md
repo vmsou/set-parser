@@ -25,6 +25,8 @@ Essa é uma lista dos recursos utilizados para fazer esse projeto
 - [x] Pertence ("∈")
 - [x] Subconjunto Próprio ("⊂")
 - [x] Subconjunto Impróprio ("⊆")
+- [x] Não é Subconjunto ("⊄")
+- [x] Não pertence ("∉")
 #### Outros
 - [x] Definir Variável ("=")
 - [x] Funções (como Potência: P(A))
@@ -69,6 +71,6 @@ O simbolo '>' indica para entrar uma expressão. Assim como exemplo, podemos def
 
 ## Para fazer:
 - [ ] Implementar Algoritimo Aho-Corasick para tokenizer
-- [ ] Subconjunto Negado ("⊄")
+- [x] Subconjunto Negado ("⊄")
 - [ ] Superconjunto ("⊇")
-- [ ] Não pertence ("∉")
+- [x] Não pertence ("∉")

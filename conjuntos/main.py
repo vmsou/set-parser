@@ -45,8 +45,8 @@ def main() -> None:
     parser: Parser[set_element_t] = SetParser(
         tokenizer=set_tokenizer,
         variables={
-            "∅": Set(), "PI": 3.1415, "π": 3.1415, "A": Set.to_set((3, 5, 7, 9)), "S": Set.to_set(range(0, 10)),
-            "B": Set.to_set(range(2, 7))
+            "∅": Set(), "PI": 3.1415, "π": 3.1415, "A": Set.to_set((1,)), "S": Set.to_set(range(0, 10)),
+            "B": Set.to_set((2,))
         },
         functions={"P": power_set}
     )

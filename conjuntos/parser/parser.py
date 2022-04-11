@@ -79,18 +79,20 @@ class SetParser(Parser):
                         temp: Token = stack.pop()
                         stack.append(temp)  # stack.top()
 
+                        if (temp.kind == "OPEN") or (get_priority(temp.kind) < get_priority(t.kind)):
+                            break
+
                         if temp.kind == "VAR":
-                            if t.kind in "DEFINE":
+                            if t.kind == "DEFINE":
                                 break
                             else:
                                 var: Token = stack.pop()
-                                if temp.text not in self.variables:
+                                if var.text not in self.variables:
                                     operands.append(var.text)
                                 else:
                                     operands.append(self.variables[var.text])
-
-                        if (temp.kind == "OPEN") or (get_priority(temp.kind) < get_priority(t.kind)):
-                            break
+                                    if t.kind != "END":
+                                        break
 
                         elif temp.kind == "DEFINE":
                             stack.pop()  # define
@@ -140,16 +142,20 @@ class SetParser(Parser):
                                     operands.append(self.functions[should_var.text](args[::-1]))
                                 elif should_var.kind in _OPERATORS:
                                     stack.append(should_var)
+                                    break
+                                elif should_var.kind == "SEP":
+                                    pass
                                 else:
                                     raise ParseError(f"Expected Function. Instead got '{should_var.text}'.")
                             else:
                                 break
 
                         if arg_token.kind == "VAR":
-                            if arg_token.text not in self.variables:
-                                raise ParseError(f"Variable '{arg_token.text}' not defined.")
-                            operands.append(self.variables[arg_token.text])
                             args_count += 1
+                            if arg_token.text not in self.variables:
+                                operands.append(arg_token.text)
+                            else:
+                                operands.append(self.variables[arg_token.text])
 
                         elif arg_token.kind in _UNARY_OPERATORS:
                             unary_target: set_element_t = operands.pop()

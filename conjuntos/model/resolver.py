@@ -16,7 +16,8 @@ class ParseHandler(Generic[_T]):
     def __init__(self, parser: Parser[_T], default_handler: _parse_handler_c | None = None):
         self.parser: Parser[_T] = parser
         self.handlers: Dict[str, _parse_handler_c] = {}
-        self.default_handler: _parse_handler_c = default_handler
+        if default_handler:
+            self.handlers["DEFAULT"] = default_handler
 
     def add(self, kind: str) -> Callable[[_parse_handler_c], _parse_handler_c]:
         def decorator(func: _parse_handler_c) -> _parse_handler_c:
@@ -34,5 +35,5 @@ class ParseHandler(Generic[_T]):
         if result.kind in self.handlers:
             self.handlers[result.kind](result)
         else:
-            if self.default_handler:
-                self.default_handler(result)
+            if "DEFAULT" in self.handlers:
+                self.handlers["DEFAULT"](result)

@@ -73,6 +73,10 @@ def main() -> None:
 
     is_running: bool = True
 
+    @handler.add("DEFAULT")
+    def _value(r: ParseResult[set_element_t]) -> None:
+        print("Resultado inesperado.")
+
     @handler.add("NONE")
     def _value(r: ParseResult[set_element_t]) -> None:
         pass

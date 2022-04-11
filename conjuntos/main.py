@@ -1,3 +1,5 @@
+import time
+
 from typing import Iterable, TypeVar
 
 from conjuntos.model.evaluator import power_set, set_element_t
@@ -45,8 +47,7 @@ def main() -> None:
     parser: Parser[set_element_t] = SetParser(
         tokenizer=set_tokenizer,
         variables={
-            "∅": Set(), "PI": 3.1415, "π": 3.1415, "A": Set.to_set((1,)), "S": Set.to_set(range(0, 10)),
-            "B": Set.to_set((2,))
+            "∅": Set(), "PI": 3.1415, "π": 3.1415
         },
         functions={"P": power_set}
     )
@@ -58,12 +59,27 @@ def main() -> None:
     print("You can also enter 'exit' to close program.")
     print("".center(40, '-'))
 
+    exprs: list[str] = [
+        "A = {3, 5, 7, 9}",
+        "B = {2, 3, 4, 5, 6}",
+        "A ⊕ B",
+        "(A ∪ B) - (A ∩ B)",
+        "A ⊕ A",
+        "∅ ⊕ A"
+    ]
+
+    for expr in exprs:
+        print(">", expr)
+        resolve(parser, expr)
+        time.sleep(1)
+
     is_running: bool = True
     while is_running:
         expr: str = input("> ")
         try:
             result: ParseResult[set_element_t] = resolve(parser, expr)
             if result.kind == "EXIT":
+                is_running = False
                 print("Saida efetuada com sucesso.")
 
         except (ParseError, EvaluateError) as e:

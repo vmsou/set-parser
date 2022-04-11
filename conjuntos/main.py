@@ -4,6 +4,7 @@ from typing import Iterable, TypeVar
 
 from conjuntos.model.evaluator import power_set, set_element_t
 from conjuntos.model.wrapper import Set
+from conjuntos.model.resolver import ParseHandler
 from conjuntos.parser.exceptions import ParseError, EvaluateError
 from conjuntos.parser.parser import Parser, SetParser, ParseResult, resolve
 from conjuntos.parser.tokenizer import Tokenizer, SetTokenizer
@@ -52,6 +53,8 @@ def main() -> None:
         functions={"P": power_set}
     )
 
+    handler: ParseHandler = ParseHandler(parser)
+
     print(" [Set Calculator] ".center(40, '-'))
     print("Operations: " + ", ".join("∪ ∩ - ⊕ X ' ⊂ ⊆ ∈".split()))
     print("You can define variables. \nExample: \n> A = {1, 2}")
@@ -68,20 +71,31 @@ def main() -> None:
         "∅ ⊕ A"
     ]
 
+    is_running: bool = True
+
+    @handler.add("NONE")
+    def _value(r: ParseResult[set_element_t]) -> None:
+        pass
+
+    @handler.add("EXIT")
+    def _exit(r: ParseResult[set_element_t]) -> None:
+        nonlocal is_running
+        is_running = False
+        print("Saida efetuada com sucesso.")
+
+    @handler.add("VALUE")
+    def _value(r: ParseResult[set_element_t]) -> None:
+        print(r.value)
+
     for expr in exprs:
         print(">", expr)
-        resolve(parser, expr)
+        handler.resolve(expr)
         time.sleep(1)
 
-    is_running: bool = True
     while is_running:
         expr: str = input("> ")
         try:
-            result: ParseResult[set_element_t] = resolve(parser, expr)
-            if result.kind == "EXIT":
-                is_running = False
-                print("Saida efetuada com sucesso.")
-
+            handler.resolve(expr)
         except (ParseError, EvaluateError) as e:
             print("[ERROR]", str(e))
 

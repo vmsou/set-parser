@@ -66,7 +66,7 @@ def main() -> None:
     symbol_to_kind: dict[str, str] = reverse_symbols(kind_to_symbols)
     set_tokenizer: Tokenizer = SetTokenizer(symbol_to_kind)
 
-    parser: Parser[set_element_t] = SetParser(
+    parser: SetParser[set_element_t] = SetParser(
         tokenizer=set_tokenizer,
         variables={
             "∅": Set(), "PI": 3.1415, "π": 3.1415
@@ -84,6 +84,7 @@ def main() -> None:
     print("You can define variables. \nExample: \n> A = {1, 2}")
     print("You can do operations. \nExample: \n> 1 ∈ {1, 2}")
     print("Get the powerset of a set by calling P(A) or P({...})")
+    print("Enter 'clean' to clean variables.")
     print("You can also enter 'exit' to close program.")
     print("".center(40, '-'))
 
@@ -102,6 +103,11 @@ def main() -> None:
     @handler.add("VALUE")
     def _value(r: ParseResult[set_element_t]) -> None:
         print(r.value)
+
+    @handler.add("CLEAN")
+    def _value(r: ParseResult[set_element_t]) -> None:
+        parser.variables = {"∅": Set(), "PI": 3.1415, "π": 3.1415}
+        print("Variables cleaned.")
 
     exprs: list[str] = [
         "A = {3, 5, 7, 9}",

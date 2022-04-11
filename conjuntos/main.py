@@ -1,3 +1,4 @@
+import sys
 import time
 
 from typing import Iterable, TypeVar
@@ -23,6 +24,15 @@ def reverse_symbols(mapped: dict[_T, Iterable[_U]]) -> dict[_U, _T]:
         for item in v:
             reversed_mapped[item] = k
     return reversed_mapped
+
+
+def write_print(text: str, delay: float = 0.1, end='\n', end_delay: float = 1) -> None:
+    for c in text:
+        sys.stdout.write(c)
+        time.sleep(delay)
+        sys.stdout.flush()
+    time.sleep(end_delay)
+    sys.stdout.write(end)
 
 
 def main() -> None:
@@ -62,6 +72,7 @@ def main() -> None:
     print(" [Set Calculator] ".center(40, '-'))
     print("Operations: " + ", ".join("∪ ∩ - ⊕ X ' ⊂ ⊆ ∈".split()))
     print("You can define variables. \nExample: \n> A = {1, 2}")
+    print("You can do operations. \nExample: \n> 1 ∈ {1, 2}")
     print("Get the powerset of a set by calling P(A) or P({...})")
     print("You can also enter 'exit' to close program.")
     print("".center(40, '-'))
@@ -92,9 +103,10 @@ def main() -> None:
         print(r.value)
 
     for expr in exprs:
-        print(">", expr)
-        handler.resolve(expr)
+        print(">", end=' ', flush=True)
         time.sleep(1)
+        write_print(expr, delay=0.1, end_delay=1)
+        handler.resolve(expr)
 
     while is_running:
         expr: str = input("> ")

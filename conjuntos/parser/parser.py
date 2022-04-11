@@ -6,9 +6,9 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from typing import TypeVar, Generic
 
-from conjuntos.model.evaluator import evaluate, set_element_t, set_function, get_priority, _OPERATORS, _UNARY_OPERATORS
-from conjuntos.parser.exceptions import ParseError
+from conjuntos.parser.exceptions import ParseError, EvaluateError
 from conjuntos.parser.tokenizer import Tokenizer, Token
+from conjuntos.model.evaluator import evaluate, set_element_t, set_function, get_priority, _OPERATORS, _UNARY_OPERATORS
 from conjuntos.model.wrapper import Set, Number
 
 # Type Alias
@@ -31,6 +31,18 @@ class Parser(ABC, Generic[_T]):
     """ Represents an Abstract Parser Class. """
     @abstractmethod
     def parse(self, expression: str) -> ParseResult[_T]: ...
+
+
+def resolve(parser: Parser[_T], expr: str) -> ParseResult[_T]:
+    """ Try-catches parse result and print if it's a value, returns the result. """
+    result: ParseResult[_T] = ParseResult()
+    try:
+        result = parser.parse(expr)
+        if result.kind == "VALUE":
+            print(result.value)
+    except (ParseError, EvaluateError) as e:
+        print("[ERROR]", e)
+    return result
 
 
 class SetParser(Parser):

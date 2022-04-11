@@ -3,7 +3,7 @@ from typing import Iterable, TypeVar
 from conjuntos.model.evaluator import power_set, set_element_t
 from conjuntos.model.wrapper import Set
 from conjuntos.parser.exceptions import ParseError, EvaluateError
-from conjuntos.parser.parser import Parser, SetParser, ParseResult
+from conjuntos.parser.parser import Parser, SetParser, ParseResult, resolve
 from conjuntos.parser.tokenizer import Tokenizer, SetTokenizer
 
 
@@ -36,7 +36,7 @@ def main() -> None:
         "PROPER_SUBSET": ["⊂"],
         "NOT_SUBSET": ["⊄"],
         "SYMMETRIC_DIFFERENCE": ["⊖", "⊕", "^", "SYMMETRIC_DIFFERENCE"],
-        "CARTESIAN": ["X"],
+        "CARTESIAN": ["X", "x"],
         "COMPLEMENT": ["'"]
     }
     symbol_to_kind: dict[str, str] = reverse_symbols(kind_to_symbols)
@@ -62,16 +62,10 @@ def main() -> None:
     while is_running:
         expr: str = input("> ")
         try:
-            result: ParseResult[set_element_t] = parser.parse(expr)
+            result: ParseResult[set_element_t] = resolve(parser, expr)
             if result.kind == "EXIT":
                 print("Saida efetuada com sucesso.")
-                is_running = False
-            elif result.kind == "VALUE":
-                print(result.value)
-            elif result.kind == "NONE":
-                pass
-            else:
-                print("Resultado inesperado.")
+
         except (ParseError, EvaluateError) as e:
             print("[ERROR]", str(e))
 

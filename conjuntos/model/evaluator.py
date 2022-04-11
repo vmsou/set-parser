@@ -44,15 +44,15 @@ def power_set(args: list[Set[set_element_t]]) -> Set[set_element_t]:
     return ps
 
 
-def is_proper_subset(left: Set, right: Set):
-    if not right or len(left) == len(right): return False
+def is_improper_subset(left: Set[set_element_t], right: Set[set_element_t]) -> bool:
     for i in left:
-        if i not in right: return False
+        if i not in right:
+            return False
     return True
 
 
-def is_proper_subset2(left: Set, right: Set):
-    return len(left) != len(right) and len(right.intersection(left)) == len(left)
+def is_proper_subset(left: Set[set_element_t], right: Set[set_element_t]):
+    return (len(left) < len(right)) and is_improper_subset(left, right)
 
 
 def cartesian_product(left: Set[set_element_t], right: Set[set_element_t]) -> Set[set_element_t]:
@@ -76,7 +76,7 @@ _evaluations: dict[str, Callable[[set_element_t, set_element_t], set_element_t]]
     "BELONG": lambda l, r: l in r,
     "NOT_BELONG": lambda l, r: l not in r,
     "PROPER_SUBSET": is_proper_subset,
-    "IMPROPER_SUBSET": lambda l, r: l == r,
+    "IMPROPER_SUBSET": is_improper_subset,
     "NOT_SUBSET": lambda l, r: not is_proper_subset(l, r)
 }
 

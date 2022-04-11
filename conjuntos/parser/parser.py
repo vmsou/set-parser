@@ -33,18 +33,6 @@ class Parser(ABC, Generic[_T]):
     def parse(self, expression: str) -> ParseResult[_T]: ...
 
 
-def resolve(parser: Parser[_T], expr: str) -> ParseResult[_T]:
-    """ Try-catches parse result and print if it's a value, returns the result. """
-    result: ParseResult[_T] = ParseResult()
-    try:
-        result = parser.parse(expr)
-        if result.kind == "VALUE":
-            print(result.value)
-    except (ParseError, EvaluateError) as e:
-        print("[ERROR]", e)
-    return result
-
-
 class SetParser(Parser):
     """ Parses and Evaluates Set Expressions. """
     def __init__(self, tokenizer: Tokenizer, variables: dict[str, set_element_t] = None, functions: dict[str, set_function] = None):
@@ -56,6 +44,8 @@ class SetParser(Parser):
         """ Reads the expression and returns its evaluation. """
         if expression.strip().lower() in ("sair", "quit", "exit"):
             return ParseResult(kind="EXIT")
+        if expression.strip() == '':
+            return ParseResult(kind="NONE")
 
         state: ParseState = ParseState.OPERAND
         tokens: list[Token] = self.tokenizer.tokenize(expression)
@@ -205,4 +195,4 @@ class SetParser(Parser):
 
         if operands:
             return ParseResult(kind="VALUE", value=operands.pop())
-        return ParseResult()
+        return ParseResult(kind="NONE")

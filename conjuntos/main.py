@@ -4,9 +4,10 @@ from typing import Iterable, TypeVar
 
 from conjuntos.model.evaluator import power_set, set_element_t
 from conjuntos.model.wrapper import Set
-from conjuntos.model.resolver import ParseHandler
+from conjuntos.model.resolve import ParseHandler
+
 from conjuntos.parser.exceptions import ParseError, EvaluateError
-from conjuntos.parser.parser import Parser, SetParser, ParseResult, resolve
+from conjuntos.parser.parser import Parser, SetParser, ParseResult
 from conjuntos.parser.tokenizer import Tokenizer, SetTokenizer
 
 
@@ -53,7 +54,10 @@ def main() -> None:
         functions={"P": power_set}
     )
 
-    handler: ParseHandler = ParseHandler(parser)
+    handler: ParseHandler = ParseHandler(
+        parser=parser,
+        default_handler=lambda x: print("Unexpected Result.")
+    )
 
     print(" [Set Calculator] ".center(40, '-'))
     print("Operations: " + ", ".join("∪ ∩ - ⊕ X ' ⊂ ⊆ ∈".split()))
@@ -73,10 +77,6 @@ def main() -> None:
 
     is_running: bool = True
 
-    @handler.add("DEFAULT")
-    def _default(r: ParseResult[set_element_t]) -> None:
-        print("Resultado inesperado.")
-
     @handler.add("NONE")
     def _value(r: ParseResult[set_element_t]) -> None:
         pass
@@ -85,7 +85,7 @@ def main() -> None:
     def _exit(r: ParseResult[set_element_t]) -> None:
         nonlocal is_running
         is_running = False
-        print("Saida efetuada com sucesso.")
+        print("Successful exit.")
 
     @handler.add("VALUE")
     def _value(r: ParseResult[set_element_t]) -> None:

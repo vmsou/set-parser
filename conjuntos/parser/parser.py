@@ -43,7 +43,7 @@ class SetParser(Parser):
     def parse(self, expression: str) -> ParseResult[_T]:
         """ Reads the expression and returns its evaluation. """
         if expression.strip().lower() in ("sair", "quit", "exit"):
-            return ParseResult(kind="EXIT")
+            return ParseResult(kind="EXIT", value=0)
         if expression.strip() == '':
             return ParseResult(kind="NONE")
 

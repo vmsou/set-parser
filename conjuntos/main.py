@@ -35,6 +35,16 @@ def write_print(text: str, delay: float = 0.1, end='\n', end_delay: float = 1) -
     sys.stdout.write(end)
 
 
+def simulate(handler: ParseHandler[_T], exprs: Iterable[str]) -> None:
+    print("Simulating...")
+    for expr in exprs:
+        print(">", end=' ', flush=True)
+        time.sleep(1)
+        write_print(expr, delay=0.1, end_delay=1)
+        handler.resolve(expr)
+    print("Simulation Finished.")
+
+
 def main() -> None:
     kind_to_symbols: dict[str, list[str]] = {
         "SET_OPEN": ["{"], "SET_CLOSE": ["}"],
@@ -50,7 +60,7 @@ def main() -> None:
         "PROPER_SUBSET": ["⊂"],
         "NOT_SUBSET": ["⊄"],
         "SYMMETRIC_DIFFERENCE": ["⊖", "⊕", "^", "SYMMETRIC_DIFFERENCE"],
-        "CARTESIAN": ["X", "x"],
+        "CARTESIAN": ["X"],
         "COMPLEMENT": ["'"]
     }
     symbol_to_kind: dict[str, str] = reverse_symbols(kind_to_symbols)
@@ -64,7 +74,7 @@ def main() -> None:
         functions={"P": power_set}
     )
 
-    handler: ParseHandler = ParseHandler(
+    handler: ParseHandler[set_element_t] = ParseHandler(
         parser=parser,
         default_handler=lambda x: print("Unexpected Result.")
     )
@@ -77,15 +87,6 @@ def main() -> None:
     print("You can also enter 'exit' to close program.")
     print("".center(40, '-'))
 
-    exprs: list[str] = [
-        "A = {3, 5, 7, 9}",
-        "B = {2, 3, 4, 5, 6}",
-        "A ⊕ B",
-        "(A ∪ B) - (A ∩ B)",
-        "A ⊕ A",
-        "∅ ⊕ A"
-    ]
-
     is_running: bool = True
 
     @handler.add("NONE")
@@ -96,17 +97,21 @@ def main() -> None:
     def _exit(r: ParseResult[set_element_t]) -> None:
         nonlocal is_running
         is_running = False
-        print("Successful exit.")
+        print(f"Successful exit with code={r.value}.")
 
     @handler.add("VALUE")
     def _value(r: ParseResult[set_element_t]) -> None:
         print(r.value)
 
-    for expr in exprs:
-        print(">", end=' ', flush=True)
-        time.sleep(1)
-        write_print(expr, delay=0.1, end_delay=1)
-        handler.resolve(expr)
+    exprs: list[str] = [
+        "A = {3, 5, 7, 9}",
+        "B = {2, 3, 4, 5, 6}",
+        "A ⊕ B",
+        "(A ∪ B) - (A ∩ B)",
+        "A ⊕ A",
+        "∅ ⊕ A"
+    ]
+    simulate(handler, exprs)
 
     while is_running:
         expr: str = input("> ")

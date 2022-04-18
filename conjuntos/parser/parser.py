@@ -9,7 +9,7 @@ from typing import TypeVar, Generic
 from conjuntos.parser.exceptions import ParseError, EvaluateError
 from conjuntos.parser.tokenizer import Tokenizer, Token
 from conjuntos.model.evaluator import evaluate, set_element_t, set_function, get_priority, _OPERATORS, _UNARY_OPERATORS
-from conjuntos.model.wrapper import Set, Number
+from conjuntos.model.wrapper import SetWrapper, Number
 
 # Type Alias
 _T = TypeVar("_T")
@@ -74,7 +74,7 @@ class SetParser(Parser):
                     stack.pop()  # sep
                     should_open: Token = stack.pop()  # open
                     if should_open.kind != "SET_OPEN": raise ParseError(f"Error at '{should_open.text}' missing element.")
-                    operands.append(Set())
+                    operands.append(SetWrapper())
                     state = ParseState.OPERATOR
                 else:
                     raise ParseError(f"Unexpected Token: '{t.text}'")
@@ -112,7 +112,7 @@ class SetParser(Parser):
                             unary_op: Token = stack.pop()
                             unary_target: set_element_t = operands.pop()
                             if unary_op.kind == "COMPLEMENT":
-                                if type(unary_target) != Set: raise ParseError("Complement expects a Set.")
+                                if type(unary_target) != SetWrapper: raise ParseError("Complement expects a Set.")
                                 if "S" not in self.variables: raise ParseError("Universal Set ('S') must be defined for complement.")
                                 operands.append(evaluate("DIFFERENCE", self.variables["S"], unary_target))
 
@@ -166,7 +166,7 @@ class SetParser(Parser):
                         elif arg_token.kind in _UNARY_OPERATORS:
                             unary_target: set_element_t = operands.pop()
                             if arg_token.kind == "COMPLEMENT":
-                                if type(unary_target) != Set: raise ParseError("Complement expects a Set.")
+                                if type(unary_target) != SetWrapper: raise ParseError("Complement expects a Set.")
                                 if "S" not in self.variables: raise ParseError("Universal Set ('S') must be defined for complement.")
                                 operands.append(evaluate("DIFFERENCE", self.variables["S"], unary_target))
 
@@ -178,7 +178,7 @@ class SetParser(Parser):
                             args_count += 1
 
                 elif t.kind == "SET_CLOSE":
-                    group_set: Set[set_element_t] = Set()
+                    group_set: SetWrapper[set_element_t] = SetWrapper()
                     while stack:
                         set_token: Token = stack.pop()
                         if set_token.kind == "SET_OPEN":

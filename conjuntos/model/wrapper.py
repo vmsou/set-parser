@@ -5,8 +5,15 @@ from typing import Iterable, TypeVar
 _T = TypeVar("_T")
 
 
-class Set(set):
+class SetWrapper(set):
     """ Wrapper for built-in set; for representation. """
+    def __init__(self, iterable: Iterable[_T] = None):
+        super().__init__()
+        if iterable:
+            for i in iterable:
+                if type(i) in (int, float): self.add(Number(i))
+                else: self.add(i)
+
     def __str__(self) -> str:
         if self:
             return '{' + ", ".join(str(i) for i in self) + '}'
@@ -21,9 +28,9 @@ class Set(set):
         return super().__eq__(other)
 
     @staticmethod
-    def to_set(s: Iterable[_T]) -> Set[_T]:
-        new_set: Set[_T] = Set()
-        for i in s:
+    def to_set(iterable: Iterable[_T]) -> SetWrapper[_T]:
+        new_set: SetWrapper[_T] = SetWrapper()
+        for i in iterable:
             if type(i) in (int, float): new_set.add(Number(i))
             else: new_set.add(i)
         return new_set

@@ -4,7 +4,7 @@ import time
 from typing import Iterable, TypeVar
 
 from conjuntos.model.evaluator import power_set, set_element_t
-from conjuntos.model.wrapper import Set
+from conjuntos.model.wrapper import SetWrapper
 
 from conjuntos.parser.exceptions import ParseError, EvaluateError
 from conjuntos.parser.parser import Parser, SetParser, ParseResult
@@ -42,7 +42,7 @@ def simulate(handler: ParseHandler[_T], exprs: Iterable[str]) -> None:
         time.sleep(1)
         write_print(expr, delay=0.1, end_delay=1)
         handler.resolve(expr)
-    print("Simulation Finished.")
+    print("Simulation finished.")
 
 
 def main() -> None:
@@ -69,7 +69,7 @@ def main() -> None:
     parser: SetParser[set_element_t] = SetParser(
         tokenizer=set_tokenizer,
         variables={
-            "∅": Set(), "PI": 3.1415, "π": 3.1415
+            "∅": SetWrapper(), "PI": 3.1415, "π": 3.1415, "S": SetWrapper(range(10))
         },
         functions={"P": power_set}
     )
@@ -91,25 +91,26 @@ def main() -> None:
     is_running: bool = True
 
     @handler.add("NONE")
-    def _value(r: ParseResult[set_element_t]) -> None:
+    def _h_none(r: ParseResult[set_element_t]) -> None:
         pass
 
     @handler.add("EXIT")
-    def _exit(r: ParseResult[set_element_t]) -> None:
+    def _h_exit(r: ParseResult[set_element_t]) -> None:
         nonlocal is_running
         is_running = False
         print(f"Successful exit with code={r.value}.")
 
     @handler.add("VALUE")
-    def _value(r: ParseResult[set_element_t]) -> None:
+    def _h_value(r: ParseResult[set_element_t]) -> None:
         print(r.value)
 
     @handler.add("CLEAN")
-    def _value(r: ParseResult[set_element_t]) -> None:
-        parser.variables = {"∅": Set(), "PI": 3.1415, "π": 3.1415}
+    def _h_clean(r: ParseResult[set_element_t]) -> None:
+        parser.variables = {"∅": SetWrapper(), "PI": 3.1415, "π": 3.1415}
         print("Variables cleaned.")
 
     exprs: list[str] = [
+        "S = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}",
         "A = {3, 5, 7, 9}",
         "B = {2, 3, 4, 5, 6}",
         "A ⊕ B",
@@ -117,7 +118,7 @@ def main() -> None:
         "A ⊕ A",
         "∅ ⊕ A"
     ]
-    simulate(handler, exprs)
+    # simulate(handler, exprs)
 
     while is_running:
         expr: str = input("> ")

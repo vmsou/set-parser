@@ -5,11 +5,11 @@ from itertools import combinations
 from typing import Union, Callable
 
 from conjuntos.parser.exceptions import EvaluateError
-from conjuntos.model.wrapper import Set, Number
+from conjuntos.model.wrapper import SetWrapper, Number
 
 # Type Aliases
-set_element_t = Union[Number, bool, str, Set["set_element_t"], tuple["set_element_t", "set_element_t"]]
-set_t = Union[Set[set_element_t]]
+set_element_t = Union[Number, bool, str, SetWrapper["set_element_t"], tuple["set_element_t", "set_element_t"]]
+set_t = Union[SetWrapper[set_element_t]]
 set_function = Callable[[list[set_element_t]], set_element_t]
 
 # Operators
@@ -26,37 +26,37 @@ def get_priority(kind: str) -> int:
     return _priorities[kind]
 
 
-def power_set(args: list[Set[set_element_t]]) -> Set[set_element_t]:
+def power_set(args: list[SetWrapper[set_element_t]]) -> SetWrapper[set_element_t]:
     s = args[0]
-    ps: Set = Set()
+    ps: SetWrapper = SetWrapper()
     # Empty
-    ps.add(Set())
+    ps.add(SetWrapper())
 
     # Individual
     for e in s:
-        ps.add(Set({e}))
+        ps.add(SetWrapper({e}))
 
     # Combinations
     for i in range(2, len(s)):
         for comb in combinations(s, r=i):
-            ps.add(Set(comb))
+            ps.add(SetWrapper(comb))
     ps.add(s)
     return ps
 
 
-def is_improper_subset(left: Set[set_element_t], right: Set[set_element_t]) -> bool:
+def is_improper_subset(left: SetWrapper[set_element_t], right: SetWrapper[set_element_t]) -> bool:
     for i in left:
         if i not in right:
             return False
     return True
 
 
-def is_proper_subset(left: Set[set_element_t], right: Set[set_element_t]):
+def is_proper_subset(left: SetWrapper[set_element_t], right: SetWrapper[set_element_t]):
     return (len(left) < len(right)) and is_improper_subset(left, right)
 
 
-def cartesian_product(left: Set[set_element_t], right: Set[set_element_t]) -> Set[set_element_t]:
-    result: Set[set_element_t] = Set()
+def cartesian_product(left: SetWrapper[set_element_t], right: SetWrapper[set_element_t]) -> SetWrapper[set_element_t]:
+    result: SetWrapper[set_element_t] = SetWrapper()
     for x in left:
         for y in right:
             result.add((x, y))
@@ -66,10 +66,10 @@ def cartesian_product(left: Set[set_element_t], right: Set[set_element_t]) -> Se
 
 _evaluations: dict[str, Callable[[set_element_t, set_element_t], set_element_t]] = {
     # Return Set
-    "UNION": lambda l, r: Set(l.union(r)),
-    "INTERSECT": lambda l, r: Set(l.intersection(r)),
-    "DIFFERENCE": lambda l, r: Set(l.difference(r)),
-    "SYMMETRIC_DIFFERENCE": lambda l, r: Set(l.symmetric_difference(r)),
+    "UNION": lambda l, r: SetWrapper(l.union(r)),
+    "INTERSECT": lambda l, r: SetWrapper(l.intersection(r)),
+    "DIFFERENCE": lambda l, r: SetWrapper(l.difference(r)),
+    "SYMMETRIC_DIFFERENCE": lambda l, r: SetWrapper(l.symmetric_difference(r)),
     "CARTESIAN": cartesian_product,
 
     # Return Boolean
@@ -83,14 +83,14 @@ _evaluations: dict[str, Callable[[set_element_t, set_element_t], set_element_t]]
 
 def evaluate(op: str, left: set_element_t, right: set_element_t) -> set_element_t:
     # Invalid Operations
-    if op in _SET_OPERATORS and (type(left) != Set or type(right) != Set):
+    if op in _SET_OPERATORS and (type(left) != SetWrapper or type(right) != SetWrapper):
         return False
 
     if op in _BOOL_OPERATORS and (type(left) in (Number, bool) and type(right) in (Number, bool)):
         return False
 
     if op in ("PROPER_SUBSET", "IMPROPER_SUBSET"):
-        if Set not in (type(left), type(right)):
+        if SetWrapper not in (type(left), type(right)):
             return False
 
     # Evaluations
